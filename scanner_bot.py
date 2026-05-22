@@ -5,8 +5,11 @@ import socket
 import requests
 import time
 import re
+import os
+from threading import Thread
+from http.server import SimpleHTTPRequestHandler, HTTPServer
 
-# --- 🛰️ ADVANCED HTTP-BANNER PASSIVE SCANNING MAINBOARD v15.0 ---
+# --- 🛰️ CHOREO SERVICE PASSTHROUGH passive SCANNING MAINBOARD v16.0 ---
 BOT_TOKEN = "8356994434:AAHsz9bKclh5GbSDZFdzOzdMgrBB3eCGJQ0"
 CHANNEL_USERNAME = "@SIGNAL_HUNTER_X"
 DEVELOPER_NAME = "Ｍʀ 𓆩✘𓆪 ♱"
@@ -16,6 +19,14 @@ bot = telebot.TeleBot(BOT_TOKEN)
 
 user_states = {}
 user_payload_methods = {}
+
+# --- 🌐 CHOREO HEALTH CHECK FAKE SERVER ENGINE ---
+def run_choreo_fake_server():
+    # Choreo የሚሰጠውን ፖርት ያነባል፣ ከሌለ በነባሪ 8080 ይጠቀማል
+    port = int(os.environ.get("PORT", 8080))
+    server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
+    print(f"📡 [CHOREO SYSTEM] Fake Health Server live on port {port}")
+    server.serve_forever()
 
 def sanitize_and_fix_domain(domain_text):
     clean_domain = domain_text.lower().strip()
@@ -48,10 +59,8 @@ def is_user_subscribed(user_id):
     try:
         status = bot.get_chat_member(CHANNEL_USERNAME, user_id).status
         return status in ['member', 'administrator', 'creator']
-    except ApiTelegramException:
-        return False
-    except Exception:
-        return False
+    except ApiTelegramException: return False
+    except Exception: return False
 
 def send_force_join_msg(chat_id):
     markup = InlineKeyboardMarkup()
@@ -104,18 +113,16 @@ def trigger_progress_bar(chat_id, message_id, target, mode_name):
                 parse_mode="HTML"
             )
             time.sleep(0.4)
-        except Exception:
-            pass
+        except Exception: pass
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     if not is_user_subscribed(message.from_user.id):
         send_force_join_msg(message.chat.id)
         return
-        
     welcome_text = (
-        "🌪️ <b>CORE INFRASTRUCTURE MATRIX SCANNER v15.0</b> 🌪️\n\n"
-        "🛸 <i>The advanced banner-grabbing passive terminal is active. Select an option from the menu.</i>\n\n"
+        "🌪️ <b>CORE INFRASTRUCTURE MATRIX SCANNER v16.0</b> 🌪️\n\n"
+        "🛸 <i>The advanced Choreo-optimized passive terminal is active. Select an option from the menu.</i>\n\n"
         f"🛡️ <b>Main Architect:</b> <code>{DEVELOPER_NAME}</code>\n"
         f"🌌 <b>Network Operations:</b> {DEVELOPER_USERNAME}"
     )
@@ -126,7 +133,6 @@ def callback_verify_subscription(call):
     if is_user_subscribed(call.from_user.id):
         bot.answer_callback_query(call.id, "✅ Access Granted! Terminal unlocked.", show_alert=True)
         bot.delete_message(call.message.chat.id, call.message.message_id)
-        
         welcome_text = (
             "🌪️ <b>ACCESS UNLOCKED</b> 🌪️\n\n"
             "🛸 <i>Handshake verified successfully. Welcome back to the core mainframe.</i>"
@@ -230,16 +236,10 @@ def handle_text_inputs(message):
         user_states[chat_id] = "host2ip"
         return
 
-    # --- 🔌 🟢/🔴 የዳበረው የ BANNER GRABBER PORT SCANNER ENGINE ---
     elif current_state == "port":
         try:
             resolved_ip = socket.gethostbyname(target_domain)
-            ports_config = {
-                22: ("SSH", "TCP"),
-                80: ("HTTP", "TCP"),
-                443: ("HTTPS", "TLS/SSL"),
-                8080: ("PROXY", "TCP")
-            }
+            ports_config = {22: ("SSH", "TCP"), 80: ("HTTP", "TCP"), 443: ("HTTPS", "TLS/SSL"), 8080: ("PROXY", "TCP")}
             
             port_box = ""
             for port, info in ports_config.items():
@@ -249,17 +249,14 @@ def handle_text_inputs(message):
                 
                 if sock.connect_ex((resolved_ip, port)) == 0:
                     port_box += f" ├─ 🟢 Port {port} [{svc_name} ({method_type})]: OPEN\n"
-                    
-                    # 🌐 ወደ ዌብ ፖርቶች የ HTTP Banner ጥያቄ መላኪያ መዋቅር
                     if port in [80, 443, 8080]:
                         try:
                             protocol = "https" if port == 443 else "http"
-                            # ሰርቨሩ ምላሽ እስኪሰጥ እንዳይዘገይ በ 2.5 ሰከንድ ይገደባል
                             res = requests.get(f"{protocol}://{target_domain}:{port}", timeout=2.5, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=False)
                             server_banner = res.headers.get('Server', 'Unknown Engine')
                             port_box += f" │   └── 📝 Response: {res.status_code} ({server_banner})\n"
                         except requests.exceptions.Timeout:
-                            port_box += f" │   └── 📝 Response: Timeout (No HTTP Banner)\n"
+                            port_box += f" │   └── 📝 Response: Timeout\n"
                         except Exception:
                             port_box += f" │   └── 📝 Response: Handshake Failed\n"
                 else:
@@ -315,12 +312,7 @@ def handle_text_inputs(message):
         offline_count = 0
         
         if len(subdomains) > 0:
-            bot.edit_message_text(
-                chat_id=chat_id,
-                message_id=status_msg.message_id,
-                text=f"⏳ <b>LOGS FOUND: {len(subdomains)} hosts mapped!</b>\n\n<code>██████████</code>\n📡 Processing clean copyable structure...",
-                parse_mode="HTML"
-            )
+            bot.edit_message_text(chat_id=chat_id, message_id=status_msg.message_id, text=f"⏳ <b>LOGS FOUND: {len(subdomains)} hosts mapped!</b>\n\n<code>██████████</code>\n📡 Processing clean copyable structure...", parse_mode="HTML")
 
         for sub in sorted(subdomains):
             try:
@@ -332,31 +324,25 @@ def handle_text_inputs(message):
                 inactive_block += f"{sub}\n"
                 offline_count += 1
 
-        output = f"🔍 <b>[ PASSIVE MATRIX INTERFACE ]</b>\n"
-        output += f"🎯 Resolved Root: <code>{target_domain}</code>\n"
-        output += f"📊 Metrics: <b>{len(subdomains)} Checked</b>\n"
-        output += f"━━━━━━━━━━━━━━━━━━━━\n\n"
-        
-        output += f"🟢 <b>ACTIVE NODES ({online_count}):</b>\n"
+        output = f"🔍 <b>[ PASSIVE MATRIX INTERFACE ]</b>\n🎯 Resolved Root: <code>{target_domain}</code>\n📊 Metrics: <b>{len(subdomains)} Checked</b>\n━━━━━━━━━━━━━━━━━━━━\n\n🟢 <b>ACTIVE NODES ({online_count}):</b>\n"
         if active_block: output += f"<pre>{active_block}</pre>"
         else: output += "<code>None detected.</code>\n"
-            
         output += f"\n🔴 <b>INACTIVE NODES ({offline_count}):</b>\n"
         if inactive_block: output += f"<pre>{inactive_block}</pre>"
         else: output += "<code>None detected.</code>\n"
             
         bot.delete_message(chat_id, status_msg.message_id)
-        
         if len(output) > 4096:
-            for x in range(0, len(output), 4000):
-                bot.send_message(chat_id, output[x:x+4000], reply_markup=get_main_menu(), parse_mode="HTML")
-        else:
-            bot.send_message(chat_id, output, reply_markup=get_main_menu(), parse_mode="HTML")
+            for x in range(0, len(output), 4000): bot.send_message(chat_id, output[x:x+4000], reply_markup=get_main_menu(), parse_mode="HTML")
+        else: bot.send_message(chat_id, output, reply_markup=get_main_menu(), parse_mode="HTML")
         return
 
+# --- 🚀 START FAKE SERVER FOR CHOREO HEALTH CHECK BEFORE BOT POLLING ---
+Thread(target=run_choreo_fake_server, daemon=True).start()
+
 print("====================================")
-print("📌 MATRIX MAINBOARD v15.0: LIVE!")
-print("🎯 Advanced HTTP Status Engine Live!")
+print("📌 MATRIX MAINBOARD v16.0: LIVE!")
+print("☁️ Choreo Service Fake Port Server Active!")
 print("====================================")
 
 bot.remove_webhook()
