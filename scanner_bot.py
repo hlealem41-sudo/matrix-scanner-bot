@@ -9,7 +9,7 @@ import os
 from threading import Thread
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 
-# --- 🛰️ CHOREO SERVICE PASSTHROUGH passive SCANNING MAINBOARD v16.0 ---
+# --- 🛰️ CHOREO SERVICE PASSTHROUGH PASSIVE SCANNING MAINBOARD v17.0 ---
 BOT_TOKEN = "8356994434:AAHsz9bKclh5GbSDZFdzOzdMgrBB3eCGJQ0"
 CHANNEL_USERNAME = "@SIGNAL_HUNTER_X"
 DEVELOPER_NAME = "Ｍʀ 𓆩✘𓆪 ♱"
@@ -22,7 +22,6 @@ user_payload_methods = {}
 
 # --- 🌐 CHOREO HEALTH CHECK FAKE SERVER ENGINE ---
 def run_choreo_fake_server():
-    # Choreo የሚሰጠውን ፖርት ያነባል፣ ከሌለ በነባሪ 8080 ይጠቀማል
     port = int(os.environ.get("PORT", 8080))
     server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
     print(f"📡 [CHOREO SYSTEM] Fake Health Server live on port {port}")
@@ -84,18 +83,21 @@ def get_main_menu():
     btn3 = KeyboardButton("🔌 PORT SCANNER")
     btn4 = KeyboardButton("🛡️ PAYLOAD HEADERS")
     btn5 = KeyboardButton("🔍 SUBDOMAIN CHECK")
-    markup.add(btn1, btn2, btn3, btn4, btn5)
+    btn6 = KeyboardButton("⚡ HOST TESTER")
+    markup.add(btn1, btn2, btn3, btn4, btn5, btn6)
     return markup
 
 def get_payload_methods_menu():
-    markup = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    markup = ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
     btn1 = KeyboardButton("📐 CONNECT Method")
     btn2 = KeyboardButton("📐 GET Method")
     btn3 = KeyboardButton("📐 HEAD Method")
     btn4 = KeyboardButton("📐 POST Method")
-    btn5 = KeyboardButton("📐 ALL Methods")
-    btn6 = KeyboardButton("🔙 BACK TO MAIN MENU")
-    markup.add(btn1, btn2, btn3, btn4, btn5, btn6)
+    btn5 = KeyboardButton("📐 PATCH Method")
+    btn6 = KeyboardButton("📐 PUT Method")
+    btn7 = KeyboardButton("📐 ALL Methods")
+    btn8 = KeyboardButton("🔙 BACK TO MAIN MENU")
+    markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
     return markup
 
 def trigger_progress_bar(chat_id, message_id, target, mode_name):
@@ -112,7 +114,7 @@ def trigger_progress_bar(chat_id, message_id, target, mode_name):
                 text=f"⏳ <b>BUILDING FOR:</b> <code>{target}</code>\n\n<code>{bar}</code>\n{status_text}",
                 parse_mode="HTML"
             )
-            time.sleep(0.4)
+            time.sleep(0.3)
         except Exception: pass
 
 @bot.message_handler(commands=['start', 'help'])
@@ -120,11 +122,18 @@ def send_welcome(message):
     if not is_user_subscribed(message.from_user.id):
         send_force_join_msg(message.chat.id)
         return
+        
     welcome_text = (
-        "🌪️ <b>CORE INFRASTRUCTURE MATRIX SCANNER v16.0</b> 🌪️\n\n"
-        "🛸 <i>The advanced Choreo-optimized passive terminal is active. Select an option from the menu.</i>\n\n"
-        f"🛡️ <b>Main Architect:</b> <code>{DEVELOPER_NAME}</code>\n"
-        f"🌌 <b>Network Operations:</b> {DEVELOPER_USERNAME}"
+        f"🤖 <b>MATRIX SCANNER TERMINAL v17.0</b> 🤖\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"👋 Welcome <b>{message.from_user.first_name}</b>! Authentication successful.\n\n"
+        f"⚙️ <b>System Status:</b> <code>ONLINE || STABLE</code>\n"
+        f"📡 <b>Choreo Infrastructure:</b> <code>ACTIVE</code>\n\n"
+        f"🛠️ <i>This terminal is configured for passive intelligence gathering, network mapping, payload optimization, and core host audits.</i>\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"🛸 <b>Architect:</b> {DEVELOPER_NAME}\n"
+        f"🌌 <b>Operations:</b> {DEVELOPER_USERNAME}\n\n"
+        f"👇 Select a sub-system module from the menu layout below to proceed:"
     )
     bot.send_message(message.chat.id, welcome_text, reply_markup=get_main_menu(), parse_mode="HTML")
 
@@ -133,13 +142,16 @@ def callback_verify_subscription(call):
     if is_user_subscribed(call.from_user.id):
         bot.answer_callback_query(call.id, "✅ Access Granted! Terminal unlocked.", show_alert=True)
         bot.delete_message(call.message.chat.id, call.message.message_id)
+        
         welcome_text = (
-            "🌪️ <b>ACCESS UNLOCKED</b> 🌪️\n\n"
-            "🛸 <i>Handshake verified successfully. Welcome back to the core mainframe.</i>"
+            f"🔓 <b>ACCESS GRANTED • CORE UNLOCKED</b>\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"🎯 <code>Handshake Verified. Core Mainframe Unlocked.</code>\n\n"
+            f"⚡ Welcome back to the main dash board interface. All restriction parameters have been cleared."
         )
         bot.send_message(call.message.chat.id, welcome_text, reply_markup=get_main_menu(), parse_mode="HTML")
     else:
-        bot.answer_callback_query(call.id, "❌ Verification Failed! You haven't joined the channel yet.", show_alert=True)
+        bot.answer_callback_query(call.id, "❌ Verification Failed! You must join the network channel first.", show_alert=True)
 
 @bot.message_handler(func=lambda message: True)
 def handle_text_inputs(message):
@@ -159,7 +171,7 @@ def handle_text_inputs(message):
         return
     elif raw_text == "🔌 PORT SCANNER":
         user_states[chat_id] = "port"
-        bot.send_message(chat_id, "🎯 <b>[ MODE: PORT SCANNER ]</b>\n\nSend host name to map active web ports and banners:", parse_mode="HTML")
+        bot.send_message(chat_id, "🎯 <b>[ MODE: AGGRESSIVE PORT SCANNER ]</b>\n\nSend host name to map core network ports:", parse_mode="HTML")
         return
     elif raw_text == "🛡️ PAYLOAD HEADERS":
         user_states[chat_id] = "payload"
@@ -167,13 +179,17 @@ def handle_text_inputs(message):
         return
     elif raw_text == "🔍 SUBDOMAIN CHECK":
         user_states[chat_id] = "subdomain"
-        bot.send_message(chat_id, "🎯 <b>[ MODE: PASSIVE INTELLIGENCE GATHERING ]</b>\n\nSend any root domain (e.g., <code>example.com</code>) to scan:", parse_mode="HTML")
+        bot.send_message(chat_id, "🎯 <b>[ MODE: AGGRESSIVE SUBDOMAIN SCAN ]</b>\n\nSend root domain (e.g., <code>example.com</code>) to deep scan:", parse_mode="HTML")
+        return
+    elif raw_text == "⚡ HOST TESTER":
+        user_states[chat_id] = "host_tester"
+        bot.send_message(chat_id, "🎯 <b>[ MODE: HOST LIFE CHECKER ]</b>\n\nSend the Host/SNI domain to check availability, response speed, and server engine:", parse_mode="HTML")
         return
     elif raw_text == "🔙 BACK TO MAIN MENU":
         bot.send_message(chat_id, "🔙 Returning to main control panel.", reply_markup=get_main_menu(), parse_mode="HTML")
         return
 
-    if raw_text in ["📐 CONNECT Method", "📐 GET Method", "📐 HEAD Method", "📐 POST Method", "📐 ALL Methods"]:
+    if raw_text in ["📐 CONNECT Method", "📐 GET Method", "📐 HEAD Method", "📐 POST Method", "📐 PATCH Method", "📐 PUT Method", "📐 ALL Methods"]:
         method_type = raw_text.split(" ")[1]
         user_states[chat_id] = "generate_payload_final"
         user_payload_methods[chat_id] = method_type
@@ -185,7 +201,45 @@ def handle_text_inputs(message):
 
     status_msg = bot.reply_to(message, f"📡 <b>Target Cleansed:</b> <code>{target_domain}</code>\n<i>Initializing matrix handshake...</i>", parse_mode="HTML")
 
-    if current_state == "host2ip":
+    if current_state == "host_tester":
+        try:
+            start_time = time.time()
+            
+            custom_headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Connection': 'keep-alive'
+            }
+            
+            res = requests.head(f"http://{target_domain}", timeout=8, headers=custom_headers, allow_redirects=False)
+            latency = round((time.time() - start_time) * 1000, 2)
+            
+            status_code = res.status_code
+            server = res.headers.get('Server', 'Hidden Engine')
+            
+            if status_code in [200, 204]: status_msg_text = f"🟢 {status_code} OK (Host Alive)"
+            elif status_code in [301, 302, 307, 308]: status_msg_text = f"🟡 {status_code} Redirect"
+            elif status_code in [400, 403, 404]: status_msg_text = f"🔵 {status_code} Access Denied/Protected"
+            else: status_msg_text = f"🟣 {status_code} Status"
+            
+            output = (
+                f"⚡ <b>[ HOST TESTER RESULT ]</b>\n\n"
+                f"🔹 <b>Host:</b> <code>{target_domain}</code>\n"
+                f"🔹 <b>Status:</b> <code>{status_msg_text}</code>\n"
+                f"🔹 <b>Latency:</b> <code>{latency} ms</code>\n"
+                f"🔹 <b>Server Engine:</b> <code>{server}</code>\n"
+            )
+        except requests.exceptions.Timeout:
+            output = f"⚡ <b>[ HOST TESTER RESULT ]</b>\n\n❌ Host: <code>{target_domain}</code>\n⚠️ <b>Result:</b> Timeout! (Host dropped the request packet)"
+        except Exception:
+            output = f"⚡ <b>[ HOST TESTER RESULT ]</b>\n\n❌ Host: <code>{target_domain}</code>\n⚠️ <b>Result:</b> Connection Rejected/Failed"
+            
+        bot.delete_message(chat_id, status_msg.message_id)
+        bot.send_message(chat_id, output, reply_markup=get_main_menu(), parse_mode="HTML")
+        return
+
+    elif current_state == "host2ip":
         try:
             resolved_ip = socket.gethostbyname(target_domain)
             cf_status = " ☁️ [CLOUDFLARE]" if is_cloudflare(resolved_ip) else ""
@@ -210,6 +264,8 @@ def handle_text_inputs(message):
         p_get = f"GET http://{target_domain}/ HTTP/1.1[crlf]Host: {target_domain}[crlf]X-Online-Host: {target_domain}[crlf]Connection: Keep-Alive[crlf][crlf]"
         p_head = f"HEAD http://{target_domain}/ HTTP/1.1[crlf]Host: {target_domain}[crlf]X-Online-Host: {target_domain}[crlf][crlf]"
         p_post = f"POST http://{target_domain}/ HTTP/1.1[crlf]Host: {target_domain}[crlf]X-Online-Host: {target_domain}[crlf]Content-Length: 9999[crlf][crlf]"
+        p_patch = f"PATCH http://{target_domain}/ HTTP/1.1[crlf]Host: {target_domain}[crlf]X-Online-Host: {target_domain}[crlf][crlf]"
+        p_put = f"PUT http://{target_domain}/ HTTP/1.1[crlf]Host: {target_domain}[crlf]X-Online-Host: {target_domain}[crlf][crlf]"
 
         output = f"🌀 <b>[ INJECTION ENGINE MATRIX ]</b>\n\n"
         output += f"🎯 Target: <code>{target_domain}</code>\n{ip_line}"
@@ -221,12 +277,16 @@ def handle_text_inputs(message):
             output += f"🔹 <i>GET:</i>\n<pre>{p_get}</pre>\n"
             output += f"🔹 <i>HEAD:</i>\n<pre>{p_head}</pre>\n"
             output += f"🔹 <i>POST:</i>\n<pre>{p_post}</pre>\n"
+            output += f"🔹 <i>PATCH:</i>\n<pre>{p_patch}</pre>\n"
+            output += f"🔹 <i>PUT:</i>\n<pre>{p_put}</pre>\n"
         else:
-            output += "📦 <b>GENERATED PAYLOAD STRINGS:</b>\n"
+            output += "📦 <b>GENERATED PAYLOAD STRING:</b>\n"
             if selected_method == "CONNECT": output += f"<pre>{p_connect}</pre>"
             elif selected_method == "GET": output += f"<pre>{p_get}</pre>"
             elif selected_method == "HEAD": output += f"<pre>{p_head}</pre>"
             elif selected_method == "POST": output += f"<pre>{p_post}</pre>"
+            elif selected_method == "PATCH": output += f"<pre>{p_patch}</pre>"
+            elif selected_method == "PUT": output += f"<pre>{p_put}</pre>"
 
         output += "\n====================================\n"
         output += f"📡 Operator: <code>{DEVELOPER_NAME}</code>"
@@ -239,31 +299,27 @@ def handle_text_inputs(message):
     elif current_state == "port":
         try:
             resolved_ip = socket.gethostbyname(target_domain)
-            ports_config = {22: ("SSH", "TCP"), 80: ("HTTP", "TCP"), 443: ("HTTPS", "TLS/SSL"), 8080: ("PROXY", "TCP")}
+            ports_config = {
+                22: "SSH", 80: "HTTP", 443: "HTTPS", 8080: "PROXY", 
+                3128: "SQUID", 8888: "HTTP-ALT", 8000: "COMMON", 53: "DNS",
+                1194: "OVPN", 1433: "MSSQL", 3306: "MYSQL", 3389: "RDP",
+                9000: "FASTCUP", 5000: "UPNP", 8443: "SWAT", 1080: "SOCKS"
+            }
             
             port_box = ""
-            for port, info in ports_config.items():
-                svc_name, method_type = info
+            bot.edit_message_text(chat_id=chat_id, message_id=status_msg.message_id, text=f"⏳ <b>AGGRESSIVE PORT SCANNING ON:</b> <code>{target_domain}</code>\n<i>Auditing 16 configuration endpoints...</i>", parse_mode="HTML")
+            
+            for port, svc_name in ports_config.items():
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.settimeout(1.2)
+                sock.settimeout(0.8)
                 
                 if sock.connect_ex((resolved_ip, port)) == 0:
-                    port_box += f" ├─ 🟢 Port {port} [{svc_name} ({method_type})]: OPEN\n"
-                    if port in [80, 443, 8080]:
-                        try:
-                            protocol = "https" if port == 443 else "http"
-                            res = requests.get(f"{protocol}://{target_domain}:{port}", timeout=2.5, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=False)
-                            server_banner = res.headers.get('Server', 'Unknown Engine')
-                            port_box += f" │   └── 📝 Response: {res.status_code} ({server_banner})\n"
-                        except requests.exceptions.Timeout:
-                            port_box += f" │   └── 📝 Response: Timeout\n"
-                        except Exception:
-                            port_box += f" │   └── 📝 Response: Handshake Failed\n"
+                    port_box += f" ├─ 🟢 Port {port} [{svc_name}]: OPEN\n"
                 else:
-                    port_box += f" ├─ 🔴 Port {port} [{svc_name} ({method_type})]: CLOSED\n"
+                    port_box += f" ├─ 🔴 Port {port} [{svc_name}]: CLOSED\n"
                 sock.close()
                 
-            output = f"🔌 <b>[ PORT CHECKER REPORT ]</b>\n\n🎯 Target: <code>{target_domain}</code>\n📍 IP: <code>{resolved_ip}</code>\n\n<pre>{port_box}</pre>"
+            output = f"🔌 <b>[ AGGRESSIVE PORT REPORT ]</b>\n\n🎯 Target: <code>{target_domain}</code>\n📍 IP: <code>{resolved_ip}</code>\n\n<pre>{port_box}</pre>"
         except Exception:
             output = "<pre>❌ Port scanning failed. Target host unreachable.</pre>"
             
@@ -284,14 +340,14 @@ def handle_text_inputs(message):
 
     elif current_state == "subdomain":
         subdomains = set()
+        bot.edit_message_text(chat_id=chat_id, message_id=status_msg.message_id, text=f"⏳ <b>AGGRESSIVE SUBDOMAIN SCANNING...</b>\n<i>Harvesting passive nodes from 3 core diagnostic APIs...</i>", parse_mode="HTML")
+        
         try:
             crt_url = f"https://crt.sh/?q=%.{target_domain}&output=json"
-            response = requests.get(crt_url, timeout=15)
+            response = requests.get(crt_url, timeout=12)
             if response.status_code == 200:
-                json_data = response.json()
-                for item in json_data:
-                    name_value = item['name_value']
-                    for sub in name_value.split('\n'):
+                for item in response.json():
+                    for sub in item['name_value'].split('\n'):
                         sub = sub.strip().lower()
                         if sub and not sub.startswith('*.'): subdomains.add(sub)
         except Exception: pass
@@ -306,13 +362,21 @@ def handle_text_inputs(message):
                         if sub: subdomains.add(sub)
         except Exception: pass
 
+        try:
+            anubis_url = f"https://jldc.me/anubis/subdomains/{target_domain}"
+            response = requests.get(anubis_url, timeout=10)
+            if response.status_code == 200:
+                for sub in response.json():
+                    subdomains.add(sub.strip().lower())
+        except Exception: pass
+
         active_block = ""
         inactive_block = ""
         online_count = 0
         offline_count = 0
         
         if len(subdomains) > 0:
-            bot.edit_message_text(chat_id=chat_id, message_id=status_msg.message_id, text=f"⏳ <b>LOGS FOUND: {len(subdomains)} hosts mapped!</b>\n\n<code>██████████</code>\n📡 Processing clean copyable structure...", parse_mode="HTML")
+            bot.edit_message_text(chat_id=chat_id, message_id=status_msg.message_id, text=f"⏳ <b>Total Mapped Logs: {len(subdomains)} hosts!</b>\n\n<code>██████████</code>\nResolving node IP structures in parallel streams...", parse_mode="HTML")
 
         for sub in sorted(subdomains):
             try:
@@ -324,7 +388,7 @@ def handle_text_inputs(message):
                 inactive_block += f"{sub}\n"
                 offline_count += 1
 
-        output = f"🔍 <b>[ PASSIVE MATRIX INTERFACE ]</b>\n🎯 Resolved Root: <code>{target_domain}</code>\n📊 Metrics: <b>{len(subdomains)} Checked</b>\n━━━━━━━━━━━━━━━━━━━━\n\n🟢 <b>ACTIVE NODES ({online_count}):</b>\n"
+        output = f"🔍 <b>[ AGGRESSIVE SUBDOMAIN REPORT ]</b>\n🎯 Root Domain: <code>{target_domain}</code>\n📊 Metrics: <b>{len(subdomains)} Elements Found</b>\n━━━━━━━━━━━━━━━━━━━━\n\n🟢 <b>ACTIVE NODES ({online_count}):</b>\n"
         if active_block: output += f"<pre>{active_block}</pre>"
         else: output += "<code>None detected.</code>\n"
         output += f"\n🔴 <b>INACTIVE NODES ({offline_count}):</b>\n"
@@ -332,6 +396,7 @@ def handle_text_inputs(message):
         else: output += "<code>None detected.</code>\n"
             
         bot.delete_message(chat_id, status_msg.message_id)
+        
         if len(output) > 4096:
             for x in range(0, len(output), 4000): bot.send_message(chat_id, output[x:x+4000], reply_markup=get_main_menu(), parse_mode="HTML")
         else: bot.send_message(chat_id, output, reply_markup=get_main_menu(), parse_mode="HTML")
@@ -341,7 +406,7 @@ def handle_text_inputs(message):
 Thread(target=run_choreo_fake_server, daemon=True).start()
 
 print("====================================")
-print("📌 MATRIX MAINBOARD v16.0: LIVE!")
+print("📌 MATRIX MAINBOARD v17.0: ULTIMATE LIVE!")
 print("☁️ Choreo Service Fake Port Server Active!")
 print("====================================")
 
